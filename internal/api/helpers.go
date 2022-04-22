@@ -18,7 +18,7 @@ func (s *Server) ServerError(w http.ResponseWriter, err error) {
 }
 
 // To be implemented.
-func (s *Server) readJSON(w http.ResponseWriter, r *http.Request, dst interface{}) error {
+func (s *Server) readJSON(r *http.Request, dst interface{}) error {
 
 	err := json.NewDecoder(r.Body).Decode(dst)
 	if err != nil {
