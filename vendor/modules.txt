@@ -1,0 +1,20 @@
+# github.com/go-kit/kit v0.12.0
+## explicit; go 1.17
+github.com/go-kit/kit/endpoint
+github.com/go-kit/kit/transport
+github.com/go-kit/kit/transport/http
+# github.com/go-kit/log v0.2.0
+## explicit; go 1.17
+github.com/go-kit/log
+# github.com/go-logfmt/logfmt v0.5.1
+## explicit; go 1.17
+github.com/go-logfmt/logfmt
+# go4.org/intern v0.0.0-20211027215823-ae77deb06f29
+## explicit; go 1.13
+go4.org/intern
+# go4.org/unsafe/assume-no-moving-gc v0.0.0-20211027215541-db492cf91b37
+## explicit; go 1.11
+go4.org/unsafe/assume-no-moving-gc
+# inet.af/netaddr v0.0.0-20211027220019-c74959edd3b6
+## explicit; go 1.12
+inet.af/netaddr
