@@ -3,18 +3,15 @@ package api
 import (
 	"net/http"
 	"fmt"
-	"runtime/debug"
 	"encoding/json"
 	"errors"
 	"io"
 )
 
-func (s *Server) ServerError(w http.ResponseWriter, err error) {
-
-	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
-	s.ErrorLog.Output(2, trace)
-
-	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+// Request format
+type Request struct {
+	Address string `json:"address"`
+	Netmask string `json:"mask"`
 }
 
 // To be implemented.
