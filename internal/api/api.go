@@ -76,20 +76,22 @@ func (s *Server) newResponse(r *http.Request) (Response, error){
 		return Response{}, err
 	}
 
+	uip := iputil.New(request.Address, request.Netmask)
+
 	// get broadcast address
-	broadcast_addr, err := iputil.GetBroadcastAddr(request.Address, request.Netmask)
+	broadcast_addr, err := uip.GetBroadcastAddr()
 	if err != nil {
 		return Response{}, err
 	}
 
 	// get minimum host ip
-	host_min, err := iputil.GetHostMin(request.Address, request.Netmask)
+	host_min, err := uip.GetHostMin()
 	if err != nil {
 		return Response{}, err
 	}
 
 	// get maximum host ip
-	host_max, err := iputil.GetHostMax(request.Address, request.Netmask)
+	host_max, err := uip.GetHostMax()
 	if err != nil {
 		return Response{}, err
 	}

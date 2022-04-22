@@ -6,15 +6,29 @@ import (
 	"inet.af/netaddr"
 )
 
+type IPUtils interface{
+	GetBroadcastAddr()	(string, error)
+	GetHostMin()		(string, error)
+	GetHostMax()		(string, error)
+}
+
+type IP struct {
+	Address, Netmask string
+}
+
+func New(addr string, mask string) *IP {
+	return &IP{Address: addr, Netmask: mask}
+}
+
 func GetIPPrefix(addr string, mask string) (netaddr.IPPrefix, error){
 
 	return netaddr.ParseIPPrefix(fmt.Sprintf("%s/%s", addr, mask))
 
 }
 
-func GetBroadcastAddr (addr string, mask string) (string, error){
+func (i IP) GetBroadcastAddr() (string, error){
 
-	prefix, err := netaddr.ParseIPPrefix(fmt.Sprintf("%s/%s", addr, mask))
+	prefix, err := netaddr.ParseIPPrefix(fmt.Sprintf("%s/%s", i.Address, i.Netmask))
 	if err != nil {
 		return "", err
 	}
@@ -23,9 +37,9 @@ func GetBroadcastAddr (addr string, mask string) (string, error){
 
 }
 
-func GetHostMin (addr string, mask string) (string, error){
+func (i IP) GetHostMin() (string, error){
 
-	prefix, err := netaddr.ParseIPPrefix(fmt.Sprintf("%s/%s", addr, mask))
+	prefix, err := netaddr.ParseIPPrefix(fmt.Sprintf("%s/%s", i.Address, i.Netmask))
 	if err != nil {
 		return "", err
 	}
@@ -33,9 +47,9 @@ func GetHostMin (addr string, mask string) (string, error){
 	return prefix.Range().From().Next().String(), nil
 }
 
-func GetHostMax  (addr string, mask string) (string, error){
+func (i IP) GetHostMax() (string, error){
 
-	prefix, err := netaddr.ParseIPPrefix(fmt.Sprintf("%s/%s", addr, mask))
+	prefix, err := netaddr.ParseIPPrefix(fmt.Sprintf("%s/%s", i.Address, i.Netmask))
 	if err != nil {
 		return "", err
 	}
