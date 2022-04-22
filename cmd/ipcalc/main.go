@@ -1,104 +1,38 @@
-package ipcalc
+package main
 
 import (
+	"flag"
 	"log"
-	"net/http"
-	"context"
-	"encoding/json"
-	"errors"
-	"fmt"
+	"os"
 
-	"inet.af/netaddr"
-	"github.com/go-kit/kit/endpoint"
-
-	httptransport "github.com/go-kit/kit/transport/http"
+	"github.com/ganawaj/ipcalc/internal/api"
 )
 
-var ErrEmpty = errors.New("Empty string")
+// var (
+// 	version string
+// 	os_ver  string
+// 	os_arc  string
+// 	go_ver  string
+// 	git_sha string
+// )
 
-type Service interface {
-	GetNetworkInfo(string, string) (IP, error)
-}
+func main() {
 
-type service struct {}
+	var cfg api.ServerConfig
 
-type IP struct {
-	Address			string `json:"address"`
-	Netmask			string `json:"mask"`
-	Network 		string `json:"network"`
-	Broadcast		string `json:"broadcast"`
-	HostMin			string `json:"hostmin"`
-	HostMax			string `json:"hostmax"`
-	Error 			string `json:"error,omitempty"`
-}
+	flag.IntVar(&cfg.Port, "port", 4000, "HTTP listen port")
+	flag.StringVar(&cfg.Address, "address", "", "HTTP listening IP")
+	flag.Parse()
 
-type NetworkRequest struct {
-	Address string `json:"address"`
-	Netmask string `json:"mask"`
-}
+	infoLog := log.New(os.Stdout, "INFO\t", log.LUTC|log.Ltime)
+	errorLog := log.New(os.Stderr, "ERROR\t", log.LUTC|log.Ltime|log.Llongfile)
 
-func makeNetworkEndpoint(svc Service) endpoint.Endpoint {
-
-	return func(_ context.Context, request interface{}) (interface{}, error) {
-
-		req := request.(NetworkRequest)
-
-		net, err := svc.GetNetworkInfo(req.Address, req.Netmask)
-		if err != nil {
-			return IP{}, nil
-		}
-		fmt.Println(net)
-
-		return net, nil
-	}
-}
-
-func decodeNetworkAddressRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var request NetworkRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		return nil, err
-	}
-	return request, nil
-}
-
-func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
-	return json.NewEncoder(w).Encode(response)
-}
-
-func main(){
-
-	svc := service{}
-
-	networkaddressHandler := httptransport.NewServer(
-		makeNetworkEndpoint(svc),
-		decodeNetworkAddressRequest,
-		encodeResponse,
-
-	)
-
-	http.Handle("/network", networkaddressHandler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
-}
-
-func (service) GetNetworkInfo (addr string, mask string) (IP, error){
-
-	if addr == "" || mask == "" {
-		return IP{}, ErrEmpty
+	server := &api.Server{
+		Config:        cfg,
+		ErrorLog:      errorLog,
+		InfoLog:       infoLog,
 	}
 
-	// create prefix from ip address and range
-	prefix, err := netaddr.ParseIPPrefix(fmt.Sprintf("%s/%s", addr, mask))
-	if err != nil {
-		return IP{}, ErrEmpty
-	}
-
-	return IP{
-		Address: 	addr,
-		Netmask: 	mask,
-		Network: 	fmt.Sprintf("%s/%s", prefix.Range().From().String(), mask),
-		Broadcast: 	prefix.Range().To().String(),
-		HostMin: 	prefix.Range().From().Next().String(),
-		HostMax: 	prefix.Range().To().Prior().String(),
-	}, nil
-
+	err := server.ListenAndServe()
+	errorLog.Fatal(err)
 }
