@@ -15,14 +15,17 @@ func (s *Server) ipcalcHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// handle json marshalling and marshalling errors
-	b, err := json.Marshal(response)
+	b, err := json.MarshalIndent(response, "", "\t")
 	if err != nil {
 		s.ServerError(w, err)
 		return
 	}
 
 	b = append(b, '\n')
+
 	w.Header().Set("Content-Type", "application/json")
+
+	w.WriteHeader(http.StatusOK)
 	w.Write(b)
 
 }

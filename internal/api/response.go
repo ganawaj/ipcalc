@@ -7,7 +7,6 @@ import(
 	"github.com/ganawaj/ipcalc/internal/iputil"
 )
 
-
 // Response format
 type Response struct {
 	Address			string `json:"address"`
@@ -18,8 +17,6 @@ type Response struct {
 	HostMax			string `json:"hostmax,omitempty"`
 	Error 			string `json:"error,omitempty"`
 }
-
-
 
 // create Response from request header
 func (s *Server) newResponse(r *http.Request) (Response, error){
