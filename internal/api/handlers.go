@@ -1,14 +1,21 @@
 package api
 
-import(
-	"net/http"
+import (
 	"encoding/json"
+	"net/http"
 )
+
 
 // handles requests to '/'
 func (s *Server) ipcalcHandler(w http.ResponseWriter, r *http.Request) {
 
-	response, err := s.newResponse(r)
+	request, err := s.newRequest(r)
+	if err != nil {
+		s.ServerError(w, err)
+		return
+	}
+
+	response, err := s.newResponse(request)
 	if err != nil {
 		s.ServerError(w, err)
 		return

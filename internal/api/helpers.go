@@ -1,20 +1,13 @@
 package api
 
-import (
-	"net/http"
-	"fmt"
-	"encoding/json"
+import(
 	"errors"
+	"net/http"
+	"encoding/json"
+	"fmt"
 	"io"
 )
 
-// Request format
-type Request struct {
-	Address string `json:"address"`
-	Netmask string `json:"mask"`
-}
-
-// To be implemented.
 func (s *Server) readJSON(r *http.Request, dst interface{}) error {
 
 	err := json.NewDecoder(r.Body).Decode(dst)
@@ -23,6 +16,7 @@ func (s *Server) readJSON(r *http.Request, dst interface{}) error {
 		var syntaxError *json.SyntaxError
 		var unmarshalTypeError *json.UnmarshalTypeError
 		var invalidUnmarshalError *json.InvalidUnmarshalError
+
 		switch {
 
 			case errors.As(err, &syntaxError):
